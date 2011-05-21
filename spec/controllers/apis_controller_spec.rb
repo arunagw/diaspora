@@ -140,6 +140,16 @@ describe ApisController do
             response.body.should_not include(@message2.to_xml.to_s)
             response.body.should include(@message3.to_xml.to_s)
           end
+          
+          it 'limits the posts to 25' do
+            authenticate bob, alice.person
+            26.times do |n|
+              alice.post(:status_message, :text => "hello #{n}", :to => alice.aspects.first)
+            end
+
+            get :user_timeline, @request_hash 
+            assigns[:timeline].count.should == 25
+          end
 
           it 'shows eve' do
             authenticate bob, eve.person

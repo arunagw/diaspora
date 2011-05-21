@@ -25,18 +25,20 @@ class ApisController < ApplicationController #We should start with this versione
         contact = @current_token.client.contact
         contact_id = contact.id 
 
-        timeline = Post.joins(:post_visibilities).where(:post_visibilities => {:contact_id => contact_id}).all
+        p = Post.arel_table
+        pv = PostVisibility.arel_table
+        @timeline = Post.joins(:post_visibilities).where((p[:public].eq(true).and(p[:author_id].eq(person.id))).or(pv[:contact_id].eq(contact_id))).limit(25)
       else
-        timeline = StatusMessage.where(:public => true, :author_id => person.id).includes(:photos).paginate(:page => params[:page], :per_page => params[:per_page], :order => "#{params[:order]} DESC")
+        @timeline = StatusMessage.where(:public => true, :author_id => person.id).includes(:photos).paginate(:page => params[:page], :per_page => params[:per_page], :order => "#{params[:order]} DESC")
       end
-      respond_with timeline do |format|
-        format.json{ render :json => timeline.to_json(:format => :twitter) }
+      respond_with @timeline do |format|
+        format.json{ render :json => @timeline.to_json(:format => :twitter) }
         format.xml do
-          timeline = timeline.collect do |post|
+          @timeline = @timeline.collect do |post|
             post.to_xml.to_s
           end
 
-          render :xml => "<XML><post>#{timeline.join('')}</post></XML>"
+          render :xml => "<XML><post>#{@timeline.join('')}</post></XML>"
         end
       end
     else
