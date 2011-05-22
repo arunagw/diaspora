@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110518222303) do
+ActiveRecord::Schema.define(:version => 20110521161930) do
 
   create_table "aspect_memberships", :force => true do |t|
     t.integer  "aspect_id",  :null => false
@@ -211,6 +211,23 @@ ActiveRecord::Schema.define(:version => 20110518222303) do
   add_index "people", ["mongo_id"], :name => "index_people_on_mongo_id"
   add_index "people", ["owner_id"], :name => "index_people_on_owner_id", :unique => true
 
+  create_table "photos", :force => true do |t|
+    t.integer  "author_id"
+    t.boolean  "public"
+    t.string   "guid"
+    t.boolean  "pending"
+    t.text     "text"
+    t.string   "status_message_guid"
+    t.integer  "status_message_id"
+    t.string   "processed_image"
+    t.string   "unprocessed_image"
+    t.text     "remote_photo_path"
+    t.string   "remote_photo_name"
+    t.string   "random_string"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "post_visibilities", :force => true do |t|
     t.integer  "post_id",                       :null => false
     t.datetime "created_at"
@@ -232,16 +249,11 @@ ActiveRecord::Schema.define(:version => 20110518222303) do
     t.boolean  "pending",                             :default => false, :null => false
     t.string   "type",                  :limit => 40,                    :null => false
     t.text     "text"
-    t.integer  "status_message_id"
-    t.text     "remote_photo_path"
-    t.string   "remote_photo_name"
     t.string   "random_string"
-    t.string   "processed_image"
     t.text     "youtube_titles"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "mongo_id"
-    t.string   "unprocessed_image"
     t.string   "object_url"
     t.string   "image_url"
     t.integer  "image_height"
@@ -253,8 +265,7 @@ ActiveRecord::Schema.define(:version => 20110518222303) do
   add_index "posts", ["author_id"], :name => "index_posts_on_person_id"
   add_index "posts", ["guid"], :name => "index_posts_on_guid", :unique => true
   add_index "posts", ["mongo_id"], :name => "index_posts_on_mongo_id"
-  add_index "posts", ["status_message_id", "pending"], :name => "index_posts_on_status_message_id_and_pending"
-  add_index "posts", ["status_message_id"], :name => "index_posts_on_status_message_id"
+  add_index "posts", ["pending"], :name => "index_posts_on_status_message_id_and_pending"
   add_index "posts", ["type", "pending", "id"], :name => "index_posts_on_type_and_pending_and_id"
 
   create_table "profiles", :force => true do |t|

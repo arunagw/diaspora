@@ -35,7 +35,7 @@ class StatusMessagesController < ApplicationController
   def create
     params[:status_message][:aspect_ids] = params[:aspect_ids]
 
-    photos = Photo.where(:id => [*params[:photos]], :diaspora_handle => current_user.person.diaspora_handle)
+    photos = Photo.where(:id => [*params[:photos]], :author_id => current_user.person.id)
 
     public_flag = params[:status_message][:public]
     public_flag.to_s.match(/(true)|(on)/) ? public_flag = true : public_flag = false
